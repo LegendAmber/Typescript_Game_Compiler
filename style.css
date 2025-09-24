@@ -1,0 +1,59 @@
+button{
+    all: unset;
+    display:block;
+    margin: 2dvh auto;
+    padding: 10px 20px;
+    font-size: 2dvw;
+    color: grey;
+}
+h1{
+    text-align: center;
+    font-size: 4dvw;
+    margin-top: 5dvh;
+}
+button:hover{
+    color: gold;
+}
+input[type="range"]{
+    all: unset;
+    background-color: lightgrey;
+    border-radius: 20px;
+    cursor: pointer;
+    display: inline;
+    width: 20dvw;
+    appearance: none;
+}
+label{
+    display: inline;
+    margin: 2dvh auto;
+    padding: 10px 20px;
+    font-size: 1.5dvw;
+    text-align: center;
+}
+label, input[type="range"]{
+    display: block;
+    margin: 0 auto;
+}
+body, html{
+    margin: 0px;
+}
+#text-box{
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    border-color: goldenrod;
+    border-style: double;
+    border-radius: 25px;
+    max-width: 75dvw;
+    text-align: center;
+    position: fixed;
+    bottom: 1dvh;
+    left: 50dvw;
+    translate: -50% 0%;
+    padding: 2dvh 2dvw;
+    border-width: .5dvh;
+    font-size: 3dvh;
+}
+#continue{
+    font-size: 4dvh;
+    padding: 0px 0px;
+}

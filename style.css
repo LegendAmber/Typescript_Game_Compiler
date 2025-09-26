@@ -34,6 +34,10 @@ label, input[type="range"]{
     display: block;
     margin: 0 auto;
 }
+input{
+    display: block;
+    margin: 1dvh auto;
+}
 body, html{
     margin: 0px;
 }
@@ -41,7 +45,6 @@ body, html{
     background-color: rgba(0,0,0,0.8);
     color: white;
     border-color: goldenrod;
-    border-style: double;
     border-radius: 25px;
     max-width: 75dvw;
     text-align: center;
@@ -51,7 +54,6 @@ body, html{
     translate: -50% 0%;
     padding: 2dvh 2dvw;
     border-width: .5dvh;
-    font-size: 3dvh;
 }
 #continue{
     font-size: 4dvh;

@@ -1,5 +1,6 @@
 //Imports
 import textBox from "./assets/textbox.js";
+import { SettingsGUI , GUIUpdater } from "./assets/settings-GUI/home.js";
 //Stores Global Values of User Settings
 let settingsValue = {
   volume: localStorage.getItem("volume") || 100,
@@ -307,3 +308,8 @@ document.addEventListener("keydown", (event) => {
       break;
   }
 });
+
+document.onresize = () =>{
+  document.getElementById("game-window").width = window.innerWidth;
+  document.getElementById("game-window").height = window.innerHeight;
+}

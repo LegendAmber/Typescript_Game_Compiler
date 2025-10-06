@@ -13,6 +13,10 @@ let globalValues = {
     fullscreen: false,
     textboxColorScheme: "light"
 };
+let canvas = document.createElement("canvas");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let ctx = canvas.getContext("2d");
 let TitleResult;
 const FileImportTitleScreen = fetch("./assets/titleScreen.html").then(res => res.text()).catch(err => err);
 titleScreen();
@@ -35,6 +39,9 @@ async function titleScreen() {
     startButton.innerHTML = "Start Game";
     settingsButton.innerText = "Settings";
     startButton.onclick = () => {
+        document.body.appendChild(canvas);
+        gameRender();
+        pageElement.remove();
     };
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -50,9 +57,99 @@ async function settingsScreen() {
     catch (err) {
         err;
     }
-    let title = "Settings";
     let pageElement = document.createElement("div");
     pageElement.id = "settingsScreen";
     pageElement.innerHTML = SettingsResult;
     document.body.appendChild(pageElement);
+    let backButton = document.getElementById("back");
+    backButton.onclick = () => {
+        document.body.removeChild(pageElement);
+        titleScreen();
+    };
+    let displaySettingsButton = document.getElementById("display");
+    displaySettingsButton.onclick = () => {
+        document.body.removeChild(pageElement);
+        displayScreen();
+    };
 }
+const FileImportDisplayScreen = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);
+let DisplayResult;
+async function displayScreen() {
+    try {
+        DisplayResult = await FileImportDisplayScreen;
+    }
+    catch (err) {
+        err;
+    }
+    let pageElement = document.createElement("div");
+    pageElement.id = "displayScreen";
+    pageElement.innerHTML = DisplayResult;
+    document.body.appendChild(pageElement);
+    let backButton = document.getElementById("back");
+    backButton.onclick = () => {
+        document.body.removeChild(pageElement);
+        settingsScreen();
+    };
+}
+let gameWindow = false;
+let gameRender = () => {
+    if (!gameWindow)
+        gameWindow = true;
+    requestAnimationFrame(gameRender);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Game rendering logic goes here
+    ctx.fillStyle = "black";
+    ctx.fillRect(50, 50, 100, 100);
+    ctx.fill();
+};
+const FileImportESCScreen = fetch("./assets/escMenu.html").then(res => res.text()).catch(err => err);
+let ESCResult;
+let escMenuOpen = false;
+async function escMenu() {
+    if (!escMenuOpen) {
+        escMenuOpen = true;
+        try {
+            ESCResult = await FileImportESCScreen;
+        }
+        catch (err) {
+            err;
+        }
+        let pageElement = document.createElement("div");
+        pageElement.id = "escMenu";
+        pageElement.innerHTML = ESCResult;
+        pageElement.style.position = "absolute";
+        pageElement.style.top = "0px";
+        pageElement.style.left = "0px";
+        pageElement.style.width = "100dvw";
+        pageElement.style.height = "100dvh";
+        pageElement.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+        document.body.appendChild(pageElement);
+    }
+    else {
+        escMenuOpen = false;
+        let escElement = document.getElementById("escMenu");
+        escElement.remove();
+    }
+    let resumeButton = document.getElementById("resumeBtn");
+    resumeButton.onclick = () => {
+        escMenu();
+    };
+    let escSettingsButton = document.getElementById("settingsBtn");
+    escSettingsButton.onclick = () => {
+        escMenu();
+        document.body.removeChild(canvas);
+        settingsScreen();
+    };
+    let quitButton = document.getElementById("mainMenuBtn");
+    quitButton.onclick = () => {
+        escMenu();
+        document.body.removeChild(canvas);
+        titleScreen();
+    };
+}
+window.addEventListener("keydown", e => {
+    console.log(e.key);
+    if (e.key === "Escape" && gameWindow) {
+        escMenu();
+    }
+});

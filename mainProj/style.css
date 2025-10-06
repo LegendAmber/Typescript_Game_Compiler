@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Iceberg&display=swap');
 button{
     all: unset;
     display:block;
@@ -40,6 +41,8 @@ input{
 }
 body, html{
     margin: 0px;
+    font-family: "Iceberg", sans-serif;
+
 }
 #text-box{
     background-color: rgba(0,0,0,0.8);
@@ -58,4 +61,16 @@ body, html{
 #continue{
     font-size: 4dvh;
     padding: 0px 0px;
+}
+footer{
+    background-color: rgba(50,50,50,0.3);
+    position: fixed;
+    bottom: 0px;
+    text-align: center;
+    left: 50dvw;
+    translate: -50% 0%;
+    width: 30dvw;
+    padding: 1dvh 1dvw;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
 }

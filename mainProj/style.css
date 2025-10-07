@@ -14,6 +14,7 @@ h1{
 }
 button:hover{
     color: gold;
+    cursor: pointer;
 }
 input[type="range"]{
     all: unset;
@@ -43,6 +44,10 @@ body, html{
     margin: 0px;
     font-family: "Iceberg", sans-serif;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 #text-box{
     background-color: rgba(0,0,0,0.8);

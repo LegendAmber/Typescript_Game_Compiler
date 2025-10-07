@@ -1,25 +1,51 @@
 "use strict";
-let globalValues = {
-    volume: 50,
-    gameInteraction: {
-        up: "w",
-        down: "s",
-        left: "a",
-        right: "d",
-        jump: " ",
-        interact: "e",
-        inventory: "i",
-        menu: "Escape"
-    },
-    devMode: false,
-    fontSize: 16,
-    borderStyle: "solid",
-    fullscreen: false,
-    textboxColorScheme: "light",
-    currentKey: ""
+/**
+ *
+ * @param data Any StorageValues variable
+ * @returns Status of request
+ */
+let SaveState = (data, storageArea) => {
+    const jsondata = JSON.stringify(data);
+    localStorage.setItem(storageArea, jsondata);
+    return true;
 };
+/**
+ *
+ * @param storageArea Name where stored data is
+ * @returns Returns StorageState of the save state
+ */
+let loadState = (storageArea) => {
+    const storedData = localStorage.getItem(storageArea);
+    return JSON.parse(storedData);
+};
+let session = {
+    fullscreenStatus: false
+};
+let globalValues = loadState("userPref");
+//On first/clear of browser data
+if (!globalValues) {
+    globalValues = {
+        volume: 50,
+        gameInteraction: {
+            up: "w",
+            down: "s",
+            left: "a",
+            right: "d",
+            jump: " ",
+            interact: "e",
+            inventory: "i",
+            menu: "Escape"
+        },
+        devMode: false,
+        fontSize: 16,
+        borderStyle: "solid",
+        fullscreen: false,
+        textboxColorScheme: "light",
+        currentKey: ""
+    };
+    SaveState(globalValues, "userPref");
+}
 let gameWindow = false;
-console.log("Connection Established");
 let canvas = document.createElement("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -69,6 +95,17 @@ async function settingsScreen() {
     pageElement.id = "settingsScreen";
     pageElement.innerHTML = SettingsResult;
     document.body.appendChild(pageElement);
+    let inputVolume = document.getElementById("input_volume");
+    let inputValue = document.getElementById("input_value");
+    inputVolume.value = globalValues.volume.toString();
+    inputValue.innerText = globalValues.volume.toString() + " %";
+    inputVolume.onchange = () => {
+        globalValues.volume = parseInt(inputVolume.value, 10);
+        SaveState(globalValues, "userPref");
+    };
+    inputVolume.oninput = () => {
+        inputValue.innerText = inputVolume.value + " %";
+    };
     let backButton = document.getElementById("back");
     backButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -87,17 +124,67 @@ async function displayScreen() {
         DisplayResult = await FileImportDisplayScreen;
     }
     catch (err) {
-        err;
+        console.error("Error occured: " + err);
     }
     let pageElement = document.createElement("div");
     pageElement.id = "displayScreen";
     pageElement.innerHTML = DisplayResult;
     document.body.appendChild(pageElement);
+    let fullscreenBtn = document.getElementById("fullscreenBtn");
+    let textSizeBtn = document.getElementById("textSizeBtn");
+    let colorSchemeBtn = document.getElementById("colorSchemeBtn");
+    let borderStyleBtn = document.getElementById("borderStyleBtn");
     let backButton = document.getElementById("back");
     backButton.onclick = () => {
         document.body.removeChild(pageElement);
         settingsScreen();
     };
+    if (!session.fullscreenStatus) {
+        fullscreenBtn.innerText = "Enter Fullscreen";
+    }
+    else {
+        fullscreenBtn.innerText = "Exit Fullscreen";
+    }
+    fullscreenBtn.onclick = () => {
+        if (!session.fullscreenStatus) {
+            fullscreenBtn.innerText = "Exit Fullscreen";
+            document.documentElement.requestFullscreen();
+            session.fullscreenStatus = true;
+        }
+        else if (session.fullscreenStatus) {
+            fullscreenBtn.innerText = "Enter Fullscreen";
+            session.fullscreenStatus = false;
+            document.exitFullscreen();
+        }
+    };
+    textSizeBtn.onclick = () => {
+        document.body.removeChild(pageElement);
+        textScreenSize();
+    };
+}
+const FileImportTextSizeScreen = fetch("./assets/displayAssets/TextSizeScreen.html").then(res => res.text()).catch(err => err);
+let TextScreenSizeResult;
+async function textScreenSize() {
+    try {
+        TextScreenSizeResult = await FileImportTextSizeScreen;
+    }
+    catch (err) {
+        console.error("Error Occured: " + err);
+    }
+    let pageElement = document.createElement("div");
+    pageElement.id = "textsizeScreen";
+    pageElement.innerHTML = TextScreenSizeResult;
+    document.body.appendChild(pageElement);
+}
+const FileImportKeybindsScreen = fetch("./assets/keybindsScreen.html").then(res => res.text()).catch(err => err);
+let KeybindResult;
+async function keybindsScreen() {
+    try {
+        KeybindResult = await FileImportKeybindsScreen;
+    }
+    catch (err) {
+        console.error("Error occured" + err);
+    }
 }
 let gameAnimationFrame;
 let gameRender = () => {

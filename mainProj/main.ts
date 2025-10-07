@@ -1,4 +1,4 @@
-interface SettingsValue {
+interface StorageValues {
     volume: number;
     gameInteraction: {
         left: string, right: string, up: string, down: string, jump: string,
@@ -37,29 +37,63 @@ interface TextBox{
     colorScheme: string;
 }
 
-let globalValues: SettingsValue = {
-    volume: 50,
-    gameInteraction: {
-        up: "w",
-        down: "s",
-        left: "a",
-        right: "d",
-        jump: " ",
-        interact: "e",
-        inventory: "i",
-        menu: "Escape"
-    },
-    devMode: false,
-    fontSize: 16,
-    borderStyle: "solid",
-    fullscreen: false,
-    textboxColorScheme: "light",
-    currentKey: ""
+interface SessionValues {
+    fullscreenStatus: boolean;
+}
+
+/**
+ * 
+ * @param data Any StorageValues variable
+ * @returns Status of request
+ */
+
+let SaveState = (data: StorageValues, storageArea: string) => {
+    const jsondata = JSON.stringify(data);
+    localStorage.setItem(storageArea, jsondata);
+    return true;
+}
+
+/**
+ * 
+ * @param storageArea Name where stored data is
+ * @returns Returns StorageState of the save state
+ */
+
+let loadState = (storageArea: string) => {
+    const storedData: string = localStorage.getItem(storageArea) as string;
+    return JSON.parse(storedData) as StorageValues;
+}
+
+let session: SessionValues = {
+    fullscreenStatus: false
+}
+let globalValues: StorageValues = loadState("userPref");
+
+//On first/clear of browser data
+if(!globalValues){
+    globalValues = {
+        volume: 50,
+        gameInteraction: {
+            up: "w",
+            down: "s",
+            left: "a",
+            right: "d",
+            jump: " ",
+            interact: "e",
+            inventory: "i",
+            menu: "Escape"
+        },
+        devMode: false,
+        fontSize: 16,
+        borderStyle: "solid",
+        fullscreen: false,
+        textboxColorScheme: "light",
+        currentKey: ""
+    }
+    SaveState(globalValues, "userPref");
 }
 
 let gameWindow: boolean = false;
-
-console.log("Connection Established");
 
 let canvas: HTMLCanvasElement = document.createElement("canvas");
 canvas.width = window.innerWidth;
@@ -110,6 +144,17 @@ async function settingsScreen() {
     pageElement.id = "settingsScreen";
     pageElement.innerHTML = SettingsResult;
     document.body.appendChild(pageElement);
+    let inputVolume = document.getElementById("input_volume") as HTMLInputElement;
+    let inputValue = document.getElementById("input_value") as HTMLLabelElement;
+    inputVolume.value = globalValues.volume.toString();
+    inputValue.innerText = globalValues.volume.toString() + " %";
+    inputVolume.onchange = () => {
+        globalValues.volume = parseInt(inputVolume.value, 10);
+        SaveState(globalValues, "userPref");
+    }
+    inputVolume.oninput = () => {
+        inputValue.innerText = inputVolume.value + " %";
+    }
     let backButton: HTMLButtonElement = document.getElementById("back") as HTMLButtonElement;
     backButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -128,16 +173,64 @@ async function displayScreen() {
     try {
         DisplayResult = await FileImportDisplayScreen;
     } catch (err) {
-        err;
+        console.error("Error occured: " + err);
     }
     let pageElement: HTMLDivElement = document.createElement("div");
     pageElement.id = "displayScreen";
     pageElement.innerHTML = DisplayResult;
     document.body.appendChild(pageElement);
+    let fullscreenBtn: HTMLButtonElement = document.getElementById("fullscreenBtn") as HTMLButtonElement;
+    let textSizeBtn: HTMLButtonElement = document.getElementById("textSizeBtn") as HTMLButtonElement;
+    let colorSchemeBtn: HTMLButtonElement = document.getElementById("colorSchemeBtn") as HTMLButtonElement;
+    let borderStyleBtn: HTMLButtonElement = document.getElementById("borderStyleBtn") as HTMLButtonElement;
     let backButton: HTMLButtonElement = document.getElementById("back") as HTMLButtonElement;
     backButton.onclick = () => {
         document.body.removeChild(pageElement);
         settingsScreen();
+    }
+    if(!session.fullscreenStatus){
+        fullscreenBtn.innerText = "Enter Fullscreen";
+    }else{
+        fullscreenBtn.innerText = "Exit Fullscreen";
+    }
+    fullscreenBtn.onclick = () => {
+        if(!session.fullscreenStatus){
+            fullscreenBtn.innerText = "Exit Fullscreen";
+            document.documentElement.requestFullscreen();
+            session.fullscreenStatus = true;
+        }else if(session.fullscreenStatus){
+            fullscreenBtn.innerText = "Enter Fullscreen";
+            session.fullscreenStatus = false;
+            document.exitFullscreen();
+        }
+    }
+    textSizeBtn.onclick = () => {
+        document.body.removeChild(pageElement);
+        textScreenSize();
+    }
+}
+
+const FileImportTextSizeScreen: Promise<string> = fetch("./assets/displayAssets/TextSizeScreen.html").then(res => res.text()).catch(err => err);
+let TextScreenSizeResult: string;
+async function textScreenSize(){
+    try{
+        TextScreenSizeResult = await FileImportTextSizeScreen;
+    }catch(err){
+        console.error("Error Occured: " + err);
+    }
+    let pageElement: HTMLDivElement = document.createElement("div");
+    pageElement.id = "textsizeScreen";
+    pageElement.innerHTML = TextScreenSizeResult;
+    document.body.appendChild(pageElement);
+}
+
+const FileImportKeybindsScreen: Promise<string> = fetch("./assets/keybindsScreen.html").then(res => res.text()).catch(err => err);
+let KeybindResult: string;
+async function keybindsScreen(){
+    try{
+        KeybindResult = await FileImportKeybindsScreen;
+    }catch(err){
+        console.error("Error occured" + err);
     }
 }
 

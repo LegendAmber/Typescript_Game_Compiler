@@ -1,27 +1,65 @@
-interface SettingsValue{
-volume: number;
-movementControls: {};
-devMode: boolean;
-fontSize: number;
-borderStyle: string;
-fullscreen: boolean;
-textboxColorScheme: string;
+interface SettingsValue {
+    volume: number;
+    gameInteraction: {
+        left: string, right: string, up: string, down: string, jump: string,
+        interact: string, inventory: string, menu: string
+    };
+    devMode: boolean;
+    fontSize: number;
+    borderStyle: string;
+    fullscreen: boolean;
+    textboxColorScheme: string;
+    currentKey: string;
+}
+
+interface Player {
+    name: string;
+    health: number;
+    velocityX: number;
+    velocityY: number;
+    positionX: number;
+    positionY: number;
+    inventory: { item: string, quantity: number }[];
+    stats: { attack: number, defense: number, speed: number, level: number, experience: number };
+    hiddenStats: {
+        inventory: number, deaths: number, timePlayed: number, enemiesDefeated: number,
+        questsCompleted: number, debuffs: string[], buffs: string[], achievments: string[]
+    };
+    questList: string[];
+}
+
+interface TextBox{
+    text: string;
+    isActive: boolean;
+    options?: string[];
+    currentOptionIndex?: number;
+    style: string;
+    colorScheme: string;
 }
 
 let globalValues: SettingsValue = {
     volume: 50,
-    movementControls: {
+    gameInteraction: {
         up: "w",
         down: "s",
         left: "a",
-        right: "d"
+        right: "d",
+        jump: " ",
+        interact: "e",
+        inventory: "i",
+        menu: "Escape"
     },
     devMode: false,
     fontSize: 16,
     borderStyle: "solid",
     fullscreen: false,
-    textboxColorScheme: "light"
+    textboxColorScheme: "light",
+    currentKey: ""
 }
+
+let gameWindow: boolean = false;
+
+console.log("Connection Established");
 
 let canvas: HTMLCanvasElement = document.createElement("canvas");
 canvas.width = window.innerWidth;
@@ -31,10 +69,10 @@ let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingCo
 let TitleResult: string;
 const FileImportTitleScreen: Promise<string> = fetch("./assets/titleScreen.html").then(res => res.text()).catch(err => err);
 titleScreen();
-async function titleScreen(){
+async function titleScreen() {
     try {
-      TitleResult = await FileImportTitleScreen;
-    }catch(err){
+        TitleResult = await FileImportTitleScreen;
+    } catch (err) {
         console.error(err);
     }
     let title: string = "Arlien";
@@ -52,6 +90,7 @@ async function titleScreen(){
         document.body.appendChild(canvas);
         gameRender();
         pageElement.remove();
+        gameWindow = true;
     }
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -61,10 +100,10 @@ async function titleScreen(){
 
 const FileImportSettingsScreen: Promise<string> = fetch("./assets/settingsScreen.html").then(res => res.text()).catch(err => err);
 let SettingsResult: string;
-async function settingsScreen(){
-    try{
+async function settingsScreen() {
+    try {
         SettingsResult = await FileImportSettingsScreen;
-    }catch(err){
+    } catch (err) {
         err;
     }
     let pageElement: HTMLDivElement = document.createElement("div");
@@ -85,10 +124,10 @@ async function settingsScreen(){
 
 const FileImportDisplayScreen: Promise<string> = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);
 let DisplayResult: string;
-async function displayScreen(){
-    try{
+async function displayScreen() {
+    try {
         DisplayResult = await FileImportDisplayScreen;
-    }catch(err){
+    } catch (err) {
         err;
     }
     let pageElement: HTMLDivElement = document.createElement("div");
@@ -102,10 +141,10 @@ async function displayScreen(){
     }
 }
 
-let gameWindow: boolean = false;
+let gameAnimationFrame: number;
 let gameRender = () => {
-    if(!gameWindow) gameWindow = true;
-    requestAnimationFrame(gameRender);
+    gameAnimationFrame = requestAnimationFrame(gameRender);
+    if (!gameWindow) cancelAnimationFrame(gameAnimationFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Game rendering logic goes here
     ctx.fillStyle = "black";
@@ -116,12 +155,12 @@ let gameRender = () => {
 const FileImportESCScreen: Promise<string> = fetch("./assets/escMenu.html").then(res => res.text()).catch(err => err);
 let ESCResult: string;
 let escMenuOpen: boolean = false;
-async function escMenu(){
-    if(!escMenuOpen){
+async function escMenu() {
+    if (!escMenuOpen) {
         escMenuOpen = true;
-        try{
+        try {
             ESCResult = await FileImportESCScreen;
-        }catch(err){
+        } catch (err) {
             err;
         }
         let pageElement: HTMLDivElement = document.createElement("div");
@@ -134,32 +173,92 @@ async function escMenu(){
         pageElement.style.height = "100dvh";
         pageElement.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
         document.body.appendChild(pageElement);
-    }else{
+        let resumeButton: HTMLButtonElement = document.getElementById("resumeBtn") as HTMLButtonElement;
+        resumeButton.onclick = () => {
+            escMenu();
+        }
+            let escSettingsButton: HTMLButtonElement = document.getElementById("settingsBtn") as HTMLButtonElement;
+            escSettingsButton.onclick = () => {
+                escMenu();
+                document.body.removeChild(canvas);
+                gameWindow = false;
+                settingsScreen();
+            }
+            let quitButton: HTMLButtonElement = document.getElementById("mainMenuBtn") as HTMLButtonElement;
+            quitButton.onclick = () => {
+                escMenu();
+                document.body.removeChild(canvas);
+                gameWindow = false;
+                titleScreen();
+            }
+    } else {
         escMenuOpen = false;
         let escElement: HTMLDivElement = document.getElementById("escMenu") as HTMLDivElement;
         escElement.remove();
     }
-    let resumeButton: HTMLButtonElement = document.getElementById("resumeBtn") as HTMLButtonElement;
-    resumeButton.onclick = () => {
-        escMenu();
-    }
-    let escSettingsButton: HTMLButtonElement = document.getElementById("settingsBtn") as HTMLButtonElement;
-    escSettingsButton.onclick = () => {
-        escMenu();
-        document.body.removeChild(canvas);
-        settingsScreen();
-    }
-    let quitButton: HTMLButtonElement = document.getElementById("mainMenuBtn") as HTMLButtonElement;
-    quitButton.onclick = () => {
-        escMenu();
-        document.body.removeChild(canvas);
-        titleScreen();
-    }
 }
 
 window.addEventListener("keydown", e => {
-    console.log(e.key); 
-    if(e.key === "Escape" && gameWindow){
-        escMenu();
+    switch (e.key) {
+        case globalValues.gameInteraction.menu:
+            if (gameWindow) escMenu();
+            break;
+        case "F2":
+            if (globalValues.devMode) console.log("Dev Mode Active");
+            break;
+        case globalValues.gameInteraction.left:
+            console.log("Left");
+            break;
+        case globalValues.gameInteraction.right:
+            console.log("Right");
+            break;
+        case globalValues.gameInteraction.up:
+            console.log("Up");
+            break;
+        case globalValues.gameInteraction.down:
+            console.log("Down");
+            break;
+        case globalValues.gameInteraction.jump:
+            console.log("Jump");
+            break;
+        case globalValues.gameInteraction.interact:
+            console.log("Interact");
+            break;
+        case globalValues.gameInteraction.inventory:
+            console.log("Inventory");
+            break;
+        default:
+            globalValues.currentKey = e.key;
+            console.debug(`Current Key Pressed: ${globalValues.currentKey}`);
+            break;
     }
 });
+
+window.addEventListener("keyup", e => {
+    switch (e.key) {
+        case globalValues.gameInteraction.left:
+            console.log("Left Released");
+            break;
+        case globalValues.gameInteraction.right:
+            console.log("Right Released");
+            break;
+        case globalValues.gameInteraction.up:
+            console.log("Up Released");
+            break;
+        case globalValues.gameInteraction.down:
+            console.log("Down Released");
+            break;
+        case globalValues.gameInteraction.jump:
+            console.log("Jump Released");
+            break;
+        case globalValues.gameInteraction.interact:
+            console.log("Interact Released");
+            break;
+        case globalValues.gameInteraction.inventory:
+            console.log("Inventory Released");
+            break;
+        default:
+            console.debug(`Current Key Released: ${e.key}`);
+            break;
+    }
+})

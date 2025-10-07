@@ -8,8 +8,7 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./mainProj/dist",
     "rootDir": "./mainProj",
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./mainProj",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["mainProj/**/*"]
 }

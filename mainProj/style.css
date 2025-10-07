@@ -42,7 +42,7 @@ input{
 body, html{
     margin: 0px;
     font-family: "Iceberg", sans-serif;
-
+    overflow: hidden;
 }
 #text-box{
     background-color: rgba(0,0,0,0.8);

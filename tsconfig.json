@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "esnext",
+    "module": "nodenext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./mainProj/dist",
     "rootDir": "./mainProj",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true
   },
   "include": ["mainProj/**/*"]
 }

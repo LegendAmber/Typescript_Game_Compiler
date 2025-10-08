@@ -5,9 +5,8 @@ interface StorageValues {
         interact: string, inventory: string, menu: string
     };
     devMode: boolean;
-    fontSize: number;
+    fontSize: string;
     borderStyle: string;
-    fullscreen: boolean;
     textboxColorScheme: string;
     currentKey: string;
 }
@@ -84,9 +83,8 @@ if(!globalValues){
             menu: "Escape"
         },
         devMode: false,
-        fontSize: 16,
+        fontSize: "2dvh",
         borderStyle: "solid",
-        fullscreen: false,
         textboxColorScheme: "light",
         currentKey: ""
     }
@@ -94,11 +92,25 @@ if(!globalValues){
 }
 
 let gameWindow: boolean = false;
+let css: HTMLStyleElement = document.createElement("style");
 
 let canvas: HTMLCanvasElement = document.createElement("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+const FileImportStyleSheet: Promise<string> = fetch("style.css").then(res => res.text()).catch(err => err);
+let StyleSheetResult: string;
+styleSheetGlobal();
+async function styleSheetGlobal(){
+    try{
+        StyleSheetResult = await FileImportStyleSheet;
+    }catch(err){
+        console.error("Document not found / " + err);
+    }
+    css.innerHTML = StyleSheetResult;
+    document.head.appendChild(css);
+}
 
 let TitleResult: string;
 const FileImportTitleScreen: Promise<string> = fetch("./assets/titleScreen.html").then(res => res.text()).catch(err => err);
@@ -222,6 +234,34 @@ async function textScreenSize(){
     pageElement.id = "textsizeScreen";
     pageElement.innerHTML = TextScreenSizeResult;
     document.body.appendChild(pageElement);
+    let buttons: HTMLButtonElement[] = [document.getElementById("small"), document.getElementById("medium"), document.getElementById("large"), document.getElementById("xlarge"), document.getElementById("xxlarge")] as HTMLButtonElement[];
+    buttons.forEach(item => {
+        let chosenState: string;
+        item.addEventListener('click', e => {
+            switch(e.target){
+                case buttons[0]:
+                    chosenState = "1.5dvh";
+                    break;
+                case buttons[1]:
+                    chosenState = "2dvh";
+                    break;
+                case buttons[2]:
+                    chosenState = "2.5dvh";
+                    break;
+                case buttons[3]:
+                    chosenState = "3dvh";
+                    break;
+                case buttons[4]:
+                    chosenState = "3.5dvh";
+                    break;
+                default:
+                    console.error("Incorrect Param passed");
+                    break;
+            }
+            globalValues.fontSize = chosenState;
+            SaveState(globalValues, "userPref");
+        });
+    });
 }
 
 const FileImportKeybindsScreen: Promise<string> = fetch("./assets/keybindsScreen.html").then(res => res.text()).catch(err => err);

@@ -37,19 +37,32 @@ if (!globalValues) {
             menu: "Escape"
         },
         devMode: false,
-        fontSize: 16,
+        fontSize: "2dvh",
         borderStyle: "solid",
-        fullscreen: false,
         textboxColorScheme: "light",
         currentKey: ""
     };
     SaveState(globalValues, "userPref");
 }
 let gameWindow = false;
+let css = document.createElement("style");
 let canvas = document.createElement("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let ctx = canvas.getContext("2d");
+const FileImportStyleSheet = fetch("style.css").then(res => res.text()).catch(err => err);
+let StyleSheetResult;
+styleSheetGlobal();
+async function styleSheetGlobal() {
+    try {
+        StyleSheetResult = await FileImportStyleSheet;
+    }
+    catch (err) {
+        console.error("Document not found / " + err);
+    }
+    css.innerHTML = StyleSheetResult;
+    document.head.appendChild(css);
+}
 let TitleResult;
 const FileImportTitleScreen = fetch("./assets/titleScreen.html").then(res => res.text()).catch(err => err);
 titleScreen();
@@ -175,6 +188,34 @@ async function textScreenSize() {
     pageElement.id = "textsizeScreen";
     pageElement.innerHTML = TextScreenSizeResult;
     document.body.appendChild(pageElement);
+    let buttons = [document.getElementById("small"), document.getElementById("medium"), document.getElementById("large"), document.getElementById("xlarge"), document.getElementById("xxlarge")];
+    buttons.forEach(item => {
+        let chosenState;
+        item.addEventListener('click', e => {
+            switch (e.target) {
+                case buttons[0]:
+                    chosenState = "1.5dvh";
+                    break;
+                case buttons[1]:
+                    chosenState = "2dvh";
+                    break;
+                case buttons[2]:
+                    chosenState = "2.5dvh";
+                    break;
+                case buttons[3]:
+                    chosenState = "3dvh";
+                    break;
+                case buttons[4]:
+                    chosenState = "3.5dvh";
+                    break;
+                default:
+                    console.error("Incorrect Param passed");
+                    break;
+            }
+            globalValues.fontSize = chosenState;
+            SaveState(globalValues, "userPref");
+        });
+    });
 }
 const FileImportKeybindsScreen = fetch("./assets/keybindsScreen.html").then(res => res.text()).catch(err => err);
 let KeybindResult;

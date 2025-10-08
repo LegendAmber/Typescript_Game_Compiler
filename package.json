@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "css-parse": "^2.0.0",
+    "postcss": "^8.5.6"
+  }
+}

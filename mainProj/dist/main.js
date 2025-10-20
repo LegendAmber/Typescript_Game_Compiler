@@ -1,6 +1,6 @@
 import { World } from "./worldGen.js";
 import { SaveState, loadState } from "./dataHandling.js";
-let worldInstance = new World("New World", 1200, { type: "clear" }, [], []);
+let worldInstance = new World("New World", 1200, { type: "clear" }, [], [], World.generateSeed());
 let session = {
     fullscreenStatus: false
 };

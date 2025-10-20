@@ -30,5 +30,6 @@ interface world{
     weather: weatherEffect;
     generatedChunks: chunk[];
     blockEntities: blockEntity[];
+    Seed: number;
 }
 export {weatherEffect, terrain, item, blockEntity, chunk, world};

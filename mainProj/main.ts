@@ -1,5 +1,5 @@
 import { weatherEffect, terrain, item, blockEntity, chunk, world } from "./interface/worldInterface.js";
-import { World } from "./worldGen.js";
+import { World, GenerateSeed } from "./worldGen.js";
 import { SaveState, loadState } from "./dataHandling.js";
 import { StorageValues, Player, SessionValues } from "./interface/userInterface.js";
 
@@ -12,7 +12,7 @@ interface TextBox{
     colorScheme: string;
 }
 
-let worldInstance: world = new World("New World", 1200, {type: "clear"}, [], []);
+let worldInstance: world = new World("New World", 1200, {type: "clear"}, [], [], World.generateSeed());
 
 let session: SessionValues = {
     fullscreenStatus: false

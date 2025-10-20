@@ -1,23 +1,6 @@
-"use strict";
-/**
- *
- * @param data Any StorageValues variable
- * @returns Status of request
- */
-let SaveState = (data, storageArea) => {
-    const jsondata = JSON.stringify(data);
-    localStorage.setItem(storageArea, jsondata);
-    return true;
-};
-/**
- *
- * @param storageArea Name where stored data is
- * @returns Returns StorageState of the save state
- */
-let loadState = (storageArea) => {
-    const storedData = localStorage.getItem(storageArea);
-    return JSON.parse(storedData);
-};
+import { World } from "./worldGen.js";
+import { SaveState, loadState } from "./dataHandling.js";
+let worldInstance = new World("New World", 1200, { type: "clear" }, [], []);
 let session = {
     fullscreenStatus: false
 };
@@ -44,6 +27,7 @@ if (!globalValues) {
     };
     SaveState(globalValues, "userPref");
 }
+SaveState(worldInstance, "gameWorld");
 let gameWindow = false;
 let css = document.createElement("style");
 let canvas = document.createElement("canvas");
@@ -128,6 +112,11 @@ async function settingsScreen() {
     displaySettingsButton.onclick = () => {
         document.body.removeChild(pageElement);
         displayScreen();
+    };
+    let keybindBtn = document.getElementById("keybinding");
+    keybindBtn.onclick = () => {
+        document.body.removeChild(pageElement);
+        keybindsScreen();
     };
 }
 const FileImportDisplayScreen = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);
@@ -226,6 +215,10 @@ async function keybindsScreen() {
     catch (err) {
         console.error("Error occured" + err);
     }
+    let pageElement = document.createElement("div");
+    pageElement.innerHTML = KeybindResult;
+    pageElement.id = "keybindScreen";
+    document.body.appendChild(pageElement);
 }
 let gameAnimationFrame;
 let gameRender = () => {

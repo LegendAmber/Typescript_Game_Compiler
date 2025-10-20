@@ -1,31 +1,7 @@
-interface StorageValues {
-    volume: number;
-    gameInteraction: {
-        left: string, right: string, up: string, down: string, jump: string,
-        interact: string, inventory: string, menu: string
-    };
-    devMode: boolean;
-    fontSize: string;
-    borderStyle: string;
-    textboxColorScheme: string;
-    currentKey: string;
-}
-
-interface Player {
-    name: string;
-    health: number;
-    velocityX: number;
-    velocityY: number;
-    positionX: number;
-    positionY: number;
-    inventory: { item: string, quantity: number }[];
-    stats: { attack: number, defense: number, speed: number, level: number, experience: number };
-    hiddenStats: {
-        inventory: number, deaths: number, timePlayed: number, enemiesDefeated: number,
-        questsCompleted: number, debuffs: string[], buffs: string[], achievments: string[]
-    };
-    questList: string[];
-}
+import { weatherEffect, terrain, item, blockEntity, chunk, world } from "./interface/worldInterface.js";
+import { World } from "./worldGen.js";
+import { SaveState, loadState } from "./dataHandling.js";
+import { StorageValues, Player, SessionValues } from "./interface/userInterface.js";
 
 interface TextBox{
     text: string;
@@ -36,36 +12,12 @@ interface TextBox{
     colorScheme: string;
 }
 
-interface SessionValues {
-    fullscreenStatus: boolean;
-}
-
-/**
- * 
- * @param data Any StorageValues variable
- * @returns Status of request
- */
-
-let SaveState = (data: StorageValues, storageArea: string) => {
-    const jsondata = JSON.stringify(data);
-    localStorage.setItem(storageArea, jsondata);
-    return true;
-}
-
-/**
- * 
- * @param storageArea Name where stored data is
- * @returns Returns StorageState of the save state
- */
-
-let loadState = (storageArea: string) => {
-    const storedData: string = localStorage.getItem(storageArea) as string;
-    return JSON.parse(storedData) as StorageValues;
-}
+let worldInstance: world = new World("New World", 1200, {type: "clear"}, [], []);
 
 let session: SessionValues = {
     fullscreenStatus: false
 }
+
 let globalValues: StorageValues = loadState("userPref");
 
 //On first/clear of browser data
@@ -90,6 +42,8 @@ if(!globalValues){
     }
     SaveState(globalValues, "userPref");
 }
+
+SaveState(worldInstance, "gameWorld");
 
 let gameWindow: boolean = false;
 let css: HTMLStyleElement = document.createElement("style");
@@ -176,6 +130,11 @@ async function settingsScreen() {
     displaySettingsButton.onclick = () => {
         document.body.removeChild(pageElement);
         displayScreen();
+    }
+    let keybindBtn: HTMLButtonElement = document.getElementById("keybinding") as HTMLButtonElement;
+    keybindBtn.onclick = () => {
+        document.body.removeChild(pageElement);
+        keybindsScreen();
     }
 }
 
@@ -272,6 +231,10 @@ async function keybindsScreen(){
     }catch(err){
         console.error("Error occured" + err);
     }
+    let pageElement:HTMLDivElement = document.createElement("div");
+    pageElement.innerHTML = KeybindResult;
+    pageElement.id = "keybindScreen";
+    document.body.appendChild(pageElement);
 }
 
 let gameAnimationFrame: number;

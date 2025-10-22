@@ -40,6 +40,6 @@ interface world{
     SpawnLimit: number;
     spawnPoints: SpawnPoint[];
 }
-export const TERRAIN_TYPE_SNOW = "snow", TERRAIN_TYPE_SAND = "sand", TERRAIN_TYPE_GRASS = "grass", TERRAIN_TYPE_JUNGLE = "jungle", TERRAIN_TYPE_BEACH = "beach", TERRAIN_TYPE_SKY = "sky", TERRAIN_TYPE_DEFAULT_UNDERGROUND = "defunderground", TERRAIN_TYPE_HELL = "hell", TERRAIN_TYPE_GEM = "gem", TERRAIN_TYPE_ANTI_GRAVITY = "anti-grav";
+
 
 export {weatherEffect, terrain, item, blockEntity, chunk, world, SpawnPoint};

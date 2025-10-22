@@ -1,5 +1,5 @@
-import { weatherEffect, blockEntity, chunk, world } from "./interface/worldInterface.js";
-
+import { weatherEffect, blockEntity, chunk, world, SpawnPoint } from "./interface/worldInterface.js";
+import { CreateSpawnPoint } from "./spawnPoint.js";
 export class World implements world{
     constructor(
         public name: string,
@@ -7,7 +7,9 @@ export class World implements world{
         public weather: weatherEffect,
         public generatedChunks: chunk[],
         public blockEntities: blockEntity[],
-        public Seed: number
+        public Seed: number,
+        public SpawnLimit: number,
+        public spawnPoints: SpawnPoint[]
     ){}
     /**
      * 
@@ -16,7 +18,8 @@ export class World implements world{
     static generateSeed(): number{
         return Math.floor(Math.random() * 1000000);
     }
-}
-export class GenerateSeed{
-
+    static createSpawnpointDefault(x: number, y: number, chunk: chunk): SpawnPoint{
+        let spawnpoint: SpawnPoint = new CreateSpawnPoint(x, y, chunk);
+        return spawnpoint;
+    }
 }

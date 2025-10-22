@@ -1,6 +1,10 @@
 import { World } from "./worldGen.js";
 import { SaveState, loadState } from "./dataHandling.js";
-let worldInstance = new World("New World", 1200, { type: "clear" }, [], [], World.generateSeed());
+import { CreateChunk } from "./chunk.js";
+import { TERRAIN_TYPE_ANTI_GRAVITY, TERRAIN_TYPE_DEFAULT_UNDERGROUND } from "./interface/worldInterface.js";
+let spawnChunks = [new CreateChunk(1, { type: TERRAIN_TYPE_ANTI_GRAVITY }, { type: TERRAIN_TYPE_DEFAULT_UNDERGROUND }), new CreateChunk(1, { type: TERRAIN_TYPE_ANTI_GRAVITY }, { type: TERRAIN_TYPE_DEFAULT_UNDERGROUND })];
+let worldInstance = new World("My great world", 1200, { type: "clear" }, [], [], World.generateSeed(), 270, [World.createSpawnpointDefault(1, 1, spawnChunks[0])]);
+SaveState(worldInstance, worldInstance.name);
 let session = {
     fullscreenStatus: false
 };
@@ -27,7 +31,6 @@ if (!globalValues) {
     };
     SaveState(globalValues, "userPref");
 }
-SaveState(worldInstance, "gameWorld");
 let gameWindow = false;
 let css = document.createElement("style");
 let canvas = document.createElement("canvas");
@@ -66,13 +69,10 @@ async function titleScreen() {
     let startButton = document.getElementById("start");
     let settingsButton = document.getElementById("settings");
     titleElement.innerText = title;
-    startButton.innerHTML = "Start Game";
+    startButton.innerHTML = "Start";
     settingsButton.innerText = "Settings";
     startButton.onclick = () => {
-        document.body.appendChild(canvas);
-        gameRender();
         pageElement.remove();
-        gameWindow = true;
     };
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -118,6 +118,20 @@ async function settingsScreen() {
         document.body.removeChild(pageElement);
         keybindsScreen();
     };
+}
+const FileImportGameScreen = fetch("./assets/gameScreen.html").then(res => res.text()).catch(err => err);
+let GameScreenResult;
+async function gameSelectScreen() {
+    try {
+        GameScreenResult = await FileImportGameScreen;
+    }
+    catch (err) {
+        console.error("Error occured: " + err);
+    }
+    let pageElement = document.createElement("div");
+    pageElement.id = "gameScreen";
+    pageElement.innerHTML = GameScreenResult;
+    document.body.appendChild(pageElement);
 }
 const FileImportDisplayScreen = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);
 let DisplayResult;

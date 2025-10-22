@@ -1,7 +1,11 @@
-import { weatherEffect, terrain, item, blockEntity, chunk, world } from "./interface/worldInterface.js";
-import { World, GenerateSeed } from "./worldGen.js";
+import { weatherEffect, terrain, item, blockEntity, chunk, world, SpawnPoint } from "./interface/worldInterface.js";
+import { World } from "./worldGen.js";
 import { SaveState, loadState } from "./dataHandling.js";
 import { StorageValues, Player, SessionValues } from "./interface/userInterface.js";
+import { entity, entityWildcard } from "./interface/entityInterface.js";
+import { CreateSpawnPoint } from "./spawnPoint.js";
+import { CreateChunk } from "./chunk.js";
+import { TERRAIN_TYPE_ANTI_GRAVITY, TERRAIN_TYPE_BEACH, TERRAIN_TYPE_DEFAULT_UNDERGROUND, TERRAIN_TYPE_GEM, TERRAIN_TYPE_GRASS, TERRAIN_TYPE_HELL, TERRAIN_TYPE_JUNGLE, TERRAIN_TYPE_SAND, TERRAIN_TYPE_SKY, TERRAIN_TYPE_SNOW } from "./interface/worldInterface.js";
 
 interface TextBox{
     text: string;
@@ -12,8 +16,9 @@ interface TextBox{
     colorScheme: string;
 }
 
-let worldInstance: world = new World("New World", 1200, {type: "clear"}, [], [], World.generateSeed());
-
+let spawnChunks: chunk[] = [new CreateChunk(1,{type: TERRAIN_TYPE_ANTI_GRAVITY} , {type: TERRAIN_TYPE_DEFAULT_UNDERGROUND}), new CreateChunk(1, {type: TERRAIN_TYPE_ANTI_GRAVITY}, {type: TERRAIN_TYPE_DEFAULT_UNDERGROUND})]
+let worldInstance: world = new World("My great world", 1200, {type: "clear"}, [], [], World.generateSeed(), 270, [World.createSpawnpointDefault(1, 1, spawnChunks[0])]);
+SaveState(worldInstance, worldInstance.name);
 let session: SessionValues = {
     fullscreenStatus: false
 }
@@ -42,8 +47,6 @@ if(!globalValues){
     }
     SaveState(globalValues, "userPref");
 }
-
-SaveState(worldInstance, "gameWorld");
 
 let gameWindow: boolean = false;
 let css: HTMLStyleElement = document.createElement("style");
@@ -84,13 +87,11 @@ async function titleScreen() {
     let startButton: HTMLButtonElement = document.getElementById("start") as HTMLButtonElement;
     let settingsButton: HTMLButtonElement = document.getElementById("settings") as HTMLButtonElement;
     titleElement.innerText = title;
-    startButton.innerHTML = "Start Game";
+    startButton.innerHTML = "Start";
     settingsButton.innerText = "Settings";
     startButton.onclick = () => {
-        document.body.appendChild(canvas);
-        gameRender();
         pageElement.remove();
-        gameWindow = true;
+        
     }
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -136,6 +137,21 @@ async function settingsScreen() {
         document.body.removeChild(pageElement);
         keybindsScreen();
     }
+}
+
+const FileImportGameScreen: Promise<string> = fetch("./assets/gameScreen.html").then(res => res.text()).catch(err => err);
+let GameScreenResult: string;
+async function gameSelectScreen() {
+    try {
+        GameScreenResult = await FileImportGameScreen;
+    }catch(err) {
+        console.error("Error occured: " + err);
+    }
+    let pageElement: HTMLDivElement = document.createElement("div");
+    pageElement.id = "gameScreen";
+    pageElement.innerHTML = GameScreenResult;
+    document.body.appendChild(pageElement);
+
 }
 
 const FileImportDisplayScreen: Promise<string> = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);

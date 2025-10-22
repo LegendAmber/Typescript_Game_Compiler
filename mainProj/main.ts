@@ -1,6 +1,6 @@
 import { weatherEffect, terrain, item, blockEntity, chunk, world, SpawnPoint } from "./interface/worldInterface.js";
 import { World } from "./worldGen.js";
-import { SaveState, loadState } from "./dataHandling.js";
+import { SaveState, loadState, LoadArrayString, SaveArrayString} from "./dataHandling.js";
 import { StorageValues, Player, SessionValues } from "./interface/userInterface.js";
 import { entity, entityWildcard } from "./interface/entityInterface.js";
 import { CreateSpawnPoint } from "./spawnPoint.js";
@@ -18,7 +18,13 @@ interface TextBox{
 
 let spawnChunks: chunk[] = [new CreateChunk(1,{type: TERRAIN_TYPE_ANTI_GRAVITY} , {type: TERRAIN_TYPE_DEFAULT_UNDERGROUND}), new CreateChunk(1, {type: TERRAIN_TYPE_ANTI_GRAVITY}, {type: TERRAIN_TYPE_DEFAULT_UNDERGROUND})]
 let worldInstance: world = new World("My great world", 1200, {type: "clear"}, [], [], World.generateSeed(), 270, [World.createSpawnpointDefault(1, 1, spawnChunks[0])]);
-SaveState(worldInstance, worldInstance.name);
+//For testing purposes: Remove in post
+let worlds: string[] = [worldInstance.name, "w", "w", "x", "test"];
+SaveArrayString(worlds, "worldSaves");
+World.SaveWorld(worldInstance, worldInstance.name);
+let worldData = World.LoadWorld(LoadArrayString("worldSaves")[0]);
+console.log(worldData);
+
 let session: SessionValues = {
     fullscreenStatus: false
 }
@@ -91,7 +97,7 @@ async function titleScreen() {
     settingsButton.innerText = "Settings";
     startButton.onclick = () => {
         pageElement.remove();
-        
+        gameSelectScreen();
     }
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -151,7 +157,8 @@ async function gameSelectScreen() {
     pageElement.id = "gameScreen";
     pageElement.innerHTML = GameScreenResult;
     document.body.appendChild(pageElement);
-
+    let worldStorage: HTMLDivElement = document.getElementById("worldStorage") as HTMLDivElement;
+    World.CreateSelectors(worlds, worldStorage);
 }
 
 const FileImportDisplayScreen: Promise<string> = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);

@@ -29,4 +29,24 @@ export class World {
         let spawnpoint = new CreateSpawnPoint(x, y, chunk);
         return spawnpoint;
     }
+    static SaveWorld(worldData, saveLocation) {
+        const worldString = JSON.stringify(worldData);
+        localStorage.setItem(saveLocation, worldString);
+        return true;
+    }
+    static LoadWorld(saveLocation) {
+        const worldString = localStorage.getItem(saveLocation);
+        return JSON.parse(worldString);
+    }
+    static CreateSelectors(worldsSaveData, appendLocation) {
+        for (let i = 0; i < worldsSaveData.length; i++) {
+            let button = document.createElement("button");
+            let br = document.createElement("hr");
+            button.setAttribute('location', `${i}`);
+            button.innerText = worldsSaveData[i];
+            button.id = worldsSaveData[i];
+            appendLocation.appendChild(button);
+            appendLocation.appendChild(br);
+        }
+    }
 }

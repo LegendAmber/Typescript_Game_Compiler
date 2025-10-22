@@ -1,6 +1,7 @@
 /**
  *
  * @param data Any StorageValues variable
+ * @param storageArea Storage area
  * @returns Status of request
  */
 let SaveState = (data, storageArea) => {
@@ -17,4 +18,19 @@ let loadState = (storageArea) => {
     const storedData = localStorage.getItem(storageArea);
     return JSON.parse(storedData);
 };
-export { SaveState, loadState };
+/**
+ *
+ * @param data Any String[] values
+ * @param storageArea Storage area
+ * @returns Status of request
+ */
+let SaveArrayString = (data, storageArea) => {
+    const StorageItems = JSON.stringify(data);
+    localStorage.setItem(storageArea, StorageItems);
+    return true;
+};
+let LoadArrayString = (storageArea) => {
+    const storedData = localStorage.getItem(storageArea);
+    return JSON.parse(storedData);
+};
+export { SaveState, loadState, SaveArrayString, LoadArrayString };

@@ -1,10 +1,15 @@
 import { World } from "./worldGen.js";
-import { SaveState, loadState } from "./dataHandling.js";
+import { SaveState, loadState, LoadArrayString, SaveArrayString } from "./dataHandling.js";
 import { CreateChunk } from "./chunk.js";
 import { TERRAIN_TYPE_ANTI_GRAVITY, TERRAIN_TYPE_DEFAULT_UNDERGROUND } from "./interface/worldInterface.js";
 let spawnChunks = [new CreateChunk(1, { type: TERRAIN_TYPE_ANTI_GRAVITY }, { type: TERRAIN_TYPE_DEFAULT_UNDERGROUND }), new CreateChunk(1, { type: TERRAIN_TYPE_ANTI_GRAVITY }, { type: TERRAIN_TYPE_DEFAULT_UNDERGROUND })];
 let worldInstance = new World("My great world", 1200, { type: "clear" }, [], [], World.generateSeed(), 270, [World.createSpawnpointDefault(1, 1, spawnChunks[0])]);
-SaveState(worldInstance, worldInstance.name);
+//For testing purposes: Remove in post
+let worlds = [worldInstance.name, "w", "w", "x", "test"];
+SaveArrayString(worlds, "worldSaves");
+World.SaveWorld(worldInstance, worldInstance.name);
+let worldData = World.LoadWorld(LoadArrayString("worldSaves")[0]);
+console.log(worldData);
 let session = {
     fullscreenStatus: false
 };
@@ -73,6 +78,7 @@ async function titleScreen() {
     settingsButton.innerText = "Settings";
     startButton.onclick = () => {
         pageElement.remove();
+        gameSelectScreen();
     };
     settingsButton.onclick = () => {
         document.body.removeChild(pageElement);
@@ -132,6 +138,8 @@ async function gameSelectScreen() {
     pageElement.id = "gameScreen";
     pageElement.innerHTML = GameScreenResult;
     document.body.appendChild(pageElement);
+    let worldStorage = document.getElementById("worldStorage");
+    World.CreateSelectors(worlds, worldStorage);
 }
 const FileImportDisplayScreen = fetch("./assets/displayScreen.html").then(res => res.text()).catch(err => err);
 let DisplayResult;

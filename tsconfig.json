@@ -6,10 +6,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./mainProj/dist",
-    "rootDir": "./mainProj",
+    "outDir": "./Dist",
+    "rootDir": "./Typescript Source Dist",
     "allowSyntheticDefaultImports": true,
     "importHelpers": true
   },
-  "include": ["mainProj/**/*"]
+  "include": ["Typescript Source Dist/**/*"]
 }

@@ -1,3 +1,10 @@
-## Test Game Engine
-### Game engine rendered with typescript code, and html fetch requests.
-#### *Current Vercel deployment is not available, as the file is currently being worked on.
+# Typescript Game Engine
+------------------------
+## How to install
+------------------------
+##### 1. Download either the Typescript Source Dist, or Dist (Both will work)
+##### 2. Download NPM typescript (Only if you are using Typescript Source Dist)
+##### 3. Compile the Typescript by running tsc -w (watch mode)
+
+
+###### Examples are found within Examples folder

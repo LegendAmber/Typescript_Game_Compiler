@@ -41,5 +41,11 @@ interface world{
     spawnPoints: SpawnPoint[];
 }
 
+interface point{
+    x: number;
+    y: number;
+}
 
-export {weatherEffect, terrain, item, blockEntity, chunk, world, SpawnPoint};
+
+
+export {weatherEffect, terrain, item, blockEntity, chunk, world, SpawnPoint, point};

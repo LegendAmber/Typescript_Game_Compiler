@@ -1,1 +1,15 @@
-export const {TERRAIN_TYPE_SNOW ="snow", TERRAIN_TYPE_SAND = "sand", TERRAIN_TYPE_GRASS = "grass", TERRAIN_TYPE_JUNGLE = "jungle", TERRAIN_TYPE_BEACH = "beach", TERRAIN_TYPE_SKY = "sky", TERRAIN_TYPE_DEFAULT_UNDERGROUND = "defunderground", TERRAIN_TYPE_HELL = "hell", TERRAIN_TYPE_GEM = "gem", TERRAIN_TYPE_ANTI_GRAVITY = "anti-grav"} = {};
+export const {
+  TERRAIN_TYPE_SNOW = "snow",
+  TERRAIN_TYPE_SAND = "sand",
+  TERRAIN_TYPE_GRASS = "grass",
+  TERRAIN_TYPE_JUNGLE = "jungle",
+  TERRAIN_TYPE_BEACH = "beach",
+  TERRAIN_TYPE_SKY = "sky",
+  TERRAIN_TYPE_DEFAULT_UNDERGROUND = "defunderground",
+  TERRAIN_TYPE_HELL = "hell",
+  TERRAIN_TYPE_GEM = "gem",
+  TERRAIN_TYPE_ANTI_GRAVITY = "anti-grav",
+  RECTANGLE_TYPE_ROUND = "rect-round",
+  RECTANGLE_TYPE_FILL = "rect-fill",
+  RECTANGLE_TYPE_LINE = "rect-line"
+} = {};
